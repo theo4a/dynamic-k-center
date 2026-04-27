@@ -3,8 +3,9 @@ import math
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from typing import Callable
+from doubling import DoublingKCenter
+from scaling_k_center_parallelized import ScalingKCenter, ScalingKCenterParallelized
 from hochbaum_shmoys import hochbaum_shmoys
-from verbessertes_doubling import DoublingClustering
 from generators import cluster_by_cluster, cluster_by_cluster_fixed_radius, evenly_growing_fixed_radius, evenly_growing_k_cluster
 from gonzalez import gonzalez
 
@@ -95,8 +96,8 @@ def plot(snapshots: list[Snapshot], algo_label: str = "Algo") -> None:
 
 k = 10
 d = euclidean_distance
-algo = DoublingClustering(k, d, 0.1)
-points = cluster_by_cluster_fixed_radius(k, 1000, 10, 0)
+algo = ScalingKCenterParallelized(k, d)
+points = cluster_by_cluster_fixed_radius(k, 1000, 10, 1)
 
 snapshots = simulate(algo, points, 9, d, k)
 plot(snapshots, algo_label="Dynamic k-center")

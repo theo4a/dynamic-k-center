@@ -1,31 +1,19 @@
-import math
-import random
 from itertools import combinations
 from typing import Callable
 
 
 
-class DoublingClustering:
-    """
-    Incremental Clustering – Doubling Algorithm (8-Approximation).
-    Charikar, Chekuri, Feder, Motwani – STOC 1997.
+class DoublingKCenter:
 
-    Speichert nur Clusterzentren, keine vollständigen Punktmengen.
-    Invarianten zu Beginn jeder Phase i:
-      (a) radius(Cⱼ) ≤ α·dᵢ
-      (b) paarweise Zentrumsabstände ≥ dᵢ
-      (c) dᵢ ≤ OPT
-    Mit α = β = 2 folgt Approximationsfaktor 2αβ = 8.
-    """
+    def __init__(self, k: int, d: Callable[[object, object], float]):
 
-    def __init__(self, k: int, dist: Callable[[object, object], float], alpha: float = 2.0, beta: float = 2.0):
-        assert alpha / (alpha - 1) <= beta, "Parameterbedingung α/(α-1) ≤ β verletzt"
+        self.k = k
+        self.d = d
 
-        self.k, self.dist, self.alpha, self.beta = k, dist, alpha, beta
-
-        self.centers: list[object] = []   # ein Zentrum pro Cluster
-        self.d: float = 0.0              # aktueller Phasenschwellwert dᵢ
-        self._buffer: list[object] = []   # Puffer vor Initialisierung
+        self._initialized = False
+        self._buffer: list[object] = []
+        self.centers: list[object] = []
+        self.r: float | None = None
 
     # ------------------------------------------------------------------
     # Öffentliche Schnittstelle
@@ -33,8 +21,7 @@ class DoublingClustering:
 
     def insert(self, point: object) -> None:
 
-
-        if len(self.centers) == 0 and len(self._buffer) <= self.k:
+        if not self._initialized:
             self._buffer.append(point)
             if len(self._buffer) == self.k + 1:
                 self._initialize()
@@ -43,7 +30,7 @@ class DoublingClustering:
 
     def query(self) -> tuple[float, list[object]]:
         """Gibt Radius und Zentren zurück"""
-        return self.alpha * self.d, self.centers
+        return 4 * self.r, self.centers
 
     # ------------------------------------------------------------------
     # Initialisierung  (setzt Phase 1 auf)
@@ -51,8 +38,11 @@ class DoublingClustering:
 
     def _initialize(self) -> None:
         self.centers = list(self._buffer)
-        # d₁ = minimaler paarweiser Zentrumsabstand  →  Invariante (c): d₁ ≤ OPT
-        self.d = min(self.dist(a, b) for a, b in combinations(self.centers, 2))
+        # r₁ = minimaler paarweiser Zentrumsabstand  →  Invariante (c): r₁ ≤ OPT
+        if self.r is None:
+            self.r = min(self.d(a, b) for a, b in combinations(self.centers, 2))/2
+
+        self._initialized = True
         # k+1 Zentren liegen bereits vor → Merge-Stage direkt anstoßen
         self._merge()
 
@@ -61,45 +51,37 @@ class DoublingClustering:
     # ------------------------------------------------------------------
 
     def _update(self, point: object) -> None:
-        radius_bound = self.alpha * self.d
 
         # Punkt dem nächsten Zentrum zuweisen, sofern Radiusschranke hält
-        closest = min(self.centers, key=lambda c: self.dist(c, point))
-        if self.dist(closest, point) <= radius_bound:
+        closest = min(self.centers, key=lambda c: self.d(c, point))
+        if self.d(closest, point) <= 4 * self.r:
             pass  # Punkt liegt im Cluster – Zentrum ändert sich nicht
         else:
             self.centers.append(point)   # neues Cluster
 
-        # k+1 Cluster erreicht → Merge-Stage starten
         if len(self.centers) == self.k + 1:
             self._merge()
 
-    # ------------------------------------------------------------------
-    # Merge-Stage: Schwellwert verdoppeln, Threshold-Graph mergen
-    # ------------------------------------------------------------------
 
     def _merge(self) -> None:
-        self.d *= self.beta   # dᵢ₊₁ = β·dᵢ
 
-        # Threshold-Graph auf Zentren: Kante ⟺ Abstand ≤ dᵢ₊₁
-        # Greedy: wähle Knoten als Repräsentant, absorbiere alle Nachbarn
+        self.r *= 2
+
         remaining = list(range(len(self.centers)))
         new_centers: list[object] = []
 
         while remaining:
             rep = remaining.pop(0)
-            # Nachbarn = alle noch nicht verarbeiteten Knoten im Threshold
             neighbors = [
                 j for j in remaining
-                if self.dist(self.centers[rep], self.centers[j]) <= self.d
+                if self.d(self.centers[rep], self.centers[j]) <= self.r * 2
             ]
             for j in neighbors:
                 remaining.remove(j)
-            new_centers.append(self.centers[rep])   # Repräsentant bleibt Zentrum
+            new_centers.append(self.centers[rep])
 
         self.centers = new_centers
 
-        # Falls immer noch k+1 -> merge erneut aufrufen
         if len(self.centers) == self.k + 1:
             self._merge()
 
