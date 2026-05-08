@@ -1,5 +1,3 @@
-
-
 import math
 import random
 
@@ -114,5 +112,13 @@ def cluster_by_cluster_fixed_radius(k: int, n: int, r: float, seed: int) -> list
             x = cx + dist * math.cos(angle)
             y = cy + dist * math.sin(angle)
             points.append((x, y))
+
+    return points
+
+def generate_points(n):
+    points = []
+
+    for m in range(n + 1):
+        points.append((0, 2**m))
 
     return points

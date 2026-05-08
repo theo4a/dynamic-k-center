@@ -1,7 +1,8 @@
 from typing import Callable
 
 
-def k_center_with_given_r(r: float, k: int, d: Callable, points: list[object]) -> list[object] | None:
+def k_center_with_r(r: float, k: int, d: Callable, points: list[object]) -> list[object] | None:
+    
     uncovered = set(points)
     centers = []
 
@@ -24,7 +25,7 @@ def k_center_with_given_r(r: float, k: int, d: Callable, points: list[object]) -
     return centers
 
 
-def hochbaum_shmoys(points: list[object], d: Callable, k: int) -> tuple[float, list[object]]:
+def hochbaum_shmoys(k: int, d: Callable, points: list[object]) -> tuple[float, list[object]]:
     
     # Edge case: nur ein Punkt
     if len(points) == 1:
@@ -49,7 +50,7 @@ def hochbaum_shmoys(points: list[object], d: Callable, k: int) -> tuple[float, l
         mid = (left + right) // 2
         r = sorted_radii[mid]
 
-        centers = k_center_with_given_r(r, k, d, points)
+        centers = k_center_with_r(r, k, d, points)
 
         if centers:
             best_r = r

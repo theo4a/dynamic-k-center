@@ -1,13 +1,7 @@
-"""
-Quelle:
-T. F. Gonzalez (1985) — "Clustering to minimize the maximum intercluster distance"
-Theoretical Computer Science, 38, S. 293-306.
-"""
-
 from typing import Callable
 
-def gonzalez(points: list[object], d: Callable[[object, object], float], k: int) -> tuple[float, list[object]]:
-    """O(n*k)"""
+
+def gonzalez(k: int, d: Callable[[object, object], float], points: list[object]) -> tuple[float, list[object]]:
 
     if not points or k <= 0:
         return 0.0, []
