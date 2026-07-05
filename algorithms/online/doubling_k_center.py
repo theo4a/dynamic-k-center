@@ -3,15 +3,14 @@ from itertools import combinations
 from typing import Callable
 
 from algorithms.online.streaming_k_center import StreamingKCenter
-from model.types import Point, Solution
 
 
 class DoublingKCenter(StreamingKCenter):
 
-    def __init__(self, k: int, d: Callable[[Point, Point], float]):
+    def __init__(self, k: int, d: Callable[[object, object], float]):
 
-        self.k = k
-        self.d = d
+        self.k: Callable[[object, object], float] = k
+        self.d: int = d
 
         self.alpha: float = 2
         self.beta: float = 2
@@ -19,12 +18,12 @@ class DoublingKCenter(StreamingKCenter):
         self.r: float = 0
 
         self.distances: list[tuple[float, int, int]] = []
-        self.centers: dict[int, Point] = {}
+        self.centers: dict[int, object] = {}
 
         self._initialized = False
 
 
-    def insert(self, point: Point) -> None:
+    def insert(self, point: object) -> None:
 
         if not self._initialized:
             self.centers[id(point)] = point
@@ -36,8 +35,11 @@ class DoublingKCenter(StreamingKCenter):
                 self._merge_stage()
 
 
-    def query(self) -> Solution:
-        return Solution(radius=self.alpha * 2 * self.r, centers=list(self.centers.values()))
+    def query(self) -> dict:
+        return {
+            "radius": self.alpha * 2 * self.r,
+            "centers": list(self.centers.values())
+        }
 
 
     def _initialize(self) -> None:
@@ -78,7 +80,7 @@ class DoublingKCenter(StreamingKCenter):
                 self.centers.pop(id_a)
 
 
-    def _update_stage(self, point: Point) -> None:
+    def _update_stage(self, point: object) -> None:
 
         if not self.centers:
             self.centers[id(point)] = point

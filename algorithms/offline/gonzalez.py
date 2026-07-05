@@ -1,10 +1,7 @@
 import random
 from typing import Callable
 
-from model.types import Solution, Point
-
-
-def gonzalez(k: int, d: Callable[[Point, Point], float], points: list[Point]) -> Solution:
+def gonzalez(k: int, d: Callable[[object, object], float], points: list[object]) -> dict:
 
     if not points or k <= 0:
         return 0.0, []
@@ -26,4 +23,7 @@ def gonzalez(k: int, d: Callable[[Point, Point], float], points: list[Point]) ->
         for p in points
     )
 
-    return Solution(radius = radius, centers = centers)
+    return {
+        "radius": radius,
+        "centers": centers
+    }

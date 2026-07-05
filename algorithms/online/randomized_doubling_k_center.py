@@ -5,12 +5,11 @@ import random
 from typing import Callable
 
 from algorithms.online.doubling_k_center import DoublingKCenter
-from model.types import Point
 
 
 class RandomizedDoublingKCenter(DoublingKCenter):
 
-    def __init__(self, k: int, d: Callable[[Point, Point], float]):
+    def __init__(self, k: int, d: Callable[[object, object], float]):
 
         self.k = k
         self.d = d
@@ -21,7 +20,7 @@ class RandomizedDoublingKCenter(DoublingKCenter):
         self.r: float = 0
 
         self.distances: list[tuple[float, int, int]] = []
-        self.centers: dict[int, Point] = {}
+        self.centers: dict[int, object] = {}
 
         self._initialized = False
 

@@ -1,15 +1,12 @@
 from abc import ABC, abstractmethod
 
-from benchmarks.metrics import Point
-from model.types import Solution
-
 class StreamingKCenter(ABC):
 
     @abstractmethod
-    def insert(self, point: Point) -> None:
+    def insert(self, point: object) -> None:
         pass
 
     @abstractmethod
-    def query(self) -> Solution:
+    def query(self) -> dict:
         pass
 
