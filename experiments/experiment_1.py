@@ -20,7 +20,7 @@ def experiment_1() -> None:
     sample_size = 100
     cluster_sds = [0.25, 0.5, 1, 2, 4, 8]
     d = euclidean_distance
-    psa_m = 1
+    psa_m = 64
 
     results: dict[str, dict[str, list[float]]] = {}
 
