@@ -27,20 +27,20 @@ def experiment_1() -> None:
     for cluster_sd in cluster_sds:
 
         results[str(cluster_sd)] = {
-            "gonzalez_sec": [],
-            "gonzalez_r": [],
+            "sec_GO": [],
+            "R_GO": [],
 
-            "da_sec": [],
-            "da_r": [],
-            "da_c_r": [],
+            "sec_DA": [],
+            "r'_DA": [],
+            "R_DA": [],
 
-            "rda_sec": [],
-            "rda_r": [],
-            "rda_c_r": [],
+            "sec_RDA": [],
+            "r'_RDA": [],
+            "R_RDA": [],
 
-            "psa_sec": [],
-            "psa_r": [],
-            "psa_c_r": [],
+            "sec_PSA": [],
+            "r'_PSA": [],
+            "R_PSA": [],
         }
 
         for i in range(sample_size):
@@ -56,11 +56,11 @@ def experiment_1() -> None:
             )
 
             # Gonzalez
-            gonzalez_start = time.perf_counter()
-            gonzalez_solution = gonzalez(k, d, points)
-            gonzalez_end = time.perf_counter()
-            results[str(cluster_sd)]["gonzalez_sec"].append(gonzalez_end - gonzalez_start)
-            results[str(cluster_sd)]["gonzalez_r"].append(gonzalez_solution["radius"])
+            go_start = time.perf_counter()
+            go_solution = gonzalez(k, d, points)
+            go_end = time.perf_counter()
+            results[str(cluster_sd)]["sec_GO"].append(go_end - go_start)
+            results[str(cluster_sd)]["R_GO"].append(go_solution["radius"])
 
             # DA
             da = DoublingKCenter(k=k, d=d)
@@ -68,9 +68,9 @@ def experiment_1() -> None:
             da_solution = simulate_streaming(da, points)
             da_end = time.perf_counter()
             da_c_r = check_radius(d, points, da_solution["centers"])
-            results[str(cluster_sd)]["da_sec"].append(da_end - da_start)
-            results[str(cluster_sd)]["da_r"].append(da_solution["radius"])
-            results[str(cluster_sd)]["da_c_r"].append(da_c_r)
+            results[str(cluster_sd)]["sec_DA"].append(da_end - da_start)
+            results[str(cluster_sd)]["r'_DA"].append(da_solution["radius"])
+            results[str(cluster_sd)]["R_DA"].append(da_c_r)
 
             # RDA
             rda = RandomizedDoublingKCenter(k=k, d=d)
@@ -78,9 +78,9 @@ def experiment_1() -> None:
             rda_solution = simulate_streaming(rda, points)
             rda_end = time.perf_counter()
             rda_c_r = check_radius(d, points, rda_solution["centers"])
-            results[str(cluster_sd)]["rda_sec"].append(rda_end - rda_start)
-            results[str(cluster_sd)]["rda_r"].append(rda_solution["radius"])
-            results[str(cluster_sd)]["rda_c_r"].append(rda_c_r)
+            results[str(cluster_sd)]["sec_RDA"].append(rda_end - rda_start)
+            results[str(cluster_sd)]["r'_RDA"].append(rda_solution["radius"])
+            results[str(cluster_sd)]["R_RDA"].append(rda_c_r)
 
             # PSA
             psa = ParallelizedScalingKCenter(k=k, d=d, m=psa_m)
@@ -88,19 +88,18 @@ def experiment_1() -> None:
             psa_solution = simulate_streaming(psa, points)
             psa_end = time.perf_counter()
             psa_c_r = check_radius(d, points, psa_solution["centers"])
-            results[str(cluster_sd)]["psa_sec"].append(psa_end - psa_start)
-            results[str(cluster_sd)]["psa_r"].append(psa_solution["radius"])
-            results[str(cluster_sd)]["psa_c_r"].append(psa_c_r)
+            results[str(cluster_sd)]["sec_PSA"].append(psa_end - psa_start)
+            results[str(cluster_sd)]["r'_PSA"].append(psa_solution["radius"])
+            results[str(cluster_sd)]["R_PSA"].append(psa_c_r)
 
     stats = []
     for cluster_sd, value in results.items():
-        gonzalez_r_mean = statistics.mean(value["gonzalez_r"])
+        gonzalez_r_mean = statistics.mean(value["R_GO"])
         stats.append({
             "cluster_sd": cluster_sd,
-            "gonzalez_r_mean": gonzalez_r_mean,
-            "da_r_mean/gonzalez_r_mean": statistics.mean(value["da_r"]) / gonzalez_r_mean,
-            "psa_r_mean/gonzalez_r_mean": statistics.mean(value["psa_r"]) / gonzalez_r_mean,
-
+            "mean(R_GO)": gonzalez_r_mean,
+            "mean(r'_DA)/mean(R_GO)": statistics.mean(value["r'_DA"]) / gonzalez_r_mean,
+            "mean(r'_PSA)/mean(R_GO)": statistics.mean(value["r'_PSA"]) / gonzalez_r_mean,
         })
 
     data = {
@@ -112,21 +111,20 @@ def experiment_1() -> None:
     write_json("experiment_1", data)
 
 
-def plot_1_experiment_1() -> None:
+def experiment_1_plot_1() -> None:
     
     file_path = os.path.join(os.path.dirname(__file__), "..", "results", "data", "experiment_1.json")
-
     with open(file_path, "r") as f:
         data = json.load(f)
     
     algorithms = {
-        "Gonzalez r": "gonzalez_r",
+        r"$R_{GO}$": "R_GO",
 
-        "DA r": "da_r",
-        "DA r'": "da_c_r",
+        r"$r'_{DA}$": "r'_DA",
+        r"$R_{DA}$": "R_DA",
 
-        "PSA-16 r": "psa_r",
-        "PSA-16 r'": "psa_c_r",
+        r"$r'_{PSA-64}$": "r'_PSA",
+        r"$R_{PSA-64}$": "R_PSA",
     }
 
     plt = boxplot(
@@ -136,6 +134,5 @@ def plot_1_experiment_1() -> None:
         algorithms=algorithms
     )
 
-    plot_file_path = os.path.join(os.path.dirname(__file__), "..", "results", "plots", "plot_1_experiment_1.jpg")
-
-    plt.savefig(plot_file_path)
+    plot_file_path = os.path.join(os.path.dirname(__file__), "..", "results", "plots", "experiment_1_plot_1.jpg")
+    plt.savefig(plot_file_path, dpi=300)

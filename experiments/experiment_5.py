@@ -22,9 +22,9 @@ def experiment_5() -> None:
 
     for m in psa_ms:
         results[str(m)] = {
-            "psa_sec": [],
-            "psa_r": [],
-            "psa_c_r": []
+            "sec_PSA": [],
+            "r'_PSA": [],
+            "R_PSA": [],
         }
 
         for i in range(sample_size):
@@ -45,17 +45,17 @@ def experiment_5() -> None:
             psa_solution = simulate_streaming(psa, points)
             psa_end = time.perf_counter()
             psa_c_r = check_radius(d, points, psa_solution["centers"])
-            results[str(m)]["psa_sec"].append(psa_end - psa_start)
-            results[str(m)]["psa_r"].append(psa_solution["radius"])
-            results[str(m)]["psa_c_r"].append(psa_c_r)
+            results[str(m)]["sec_PSA"].append(psa_end - psa_start)
+            results[str(m)]["r'_PSA"].append(psa_solution["radius"])
+            results[str(m)]["R_PSA"].append(psa_c_r)
 
     stats = []
 
     for m, value in results.items():
         stats.append({
             "m": m,
-            "psa_r_mean": statistics.mean(value["psa_r"]),
-            "psa_c_r_mean": statistics.mean(value["psa_c_r"]),
+            "mean(r'_PSA)": statistics.mean(value["r'_PSA"]),
+            "mean(R_PSA)": statistics.mean(value["R_PSA"]),
 
         })
 
@@ -69,16 +69,15 @@ def experiment_5() -> None:
     write_json("experiment_5", data)
 
 
-def plot_1_experiment_5() -> None:
+def experiment_5_plot_1() -> None:
     
     file_path = os.path.join(os.path.dirname(__file__), "..", "results", "data", "experiment_5.json")
-
     with open(file_path, "r") as f:
         data = json.load(f)
     
     algorithms = {
-        "PSA r": "psa_r",
-        "PSA r'": "psa_c_r",
+        r"$r'_{PSA}$": "r'_PSA",
+        r"$R_{PSA}$": "R_PSA",
     }
 
     plt = boxplot(
@@ -88,6 +87,5 @@ def plot_1_experiment_5() -> None:
         algorithms=algorithms
     )
 
-    plot_file_path = os.path.join(os.path.dirname(__file__), "..", "results", "plots", "plot_1_experiment_5.jpg")
-
-    plt.savefig(plot_file_path)
+    plot_file_path = os.path.join(os.path.dirname(__file__), "..", "results", "plots", "experiment_5_plot_1.jpg")
+    plt.savefig(plot_file_path, dpi=300)

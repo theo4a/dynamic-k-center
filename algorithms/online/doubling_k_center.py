@@ -63,12 +63,12 @@ class DoublingKCenter(StreamingKCenter):
         self.r *= self.beta
         threshold = 2 * self.r
 
-        # 1. Alle Kanten <= threshold aus dem Heap entfernen
+        # Alle Kanten <= threshold aus dem Heap entfernen
         edges: list[tuple[float, int, int]] = []
         while self.distances and self.distances[0][0] <= threshold:
             edges.append(heapq.heappop(self.distances))
 
-        # 2. Adjazenzliste nur aus Kanten zwischen (noch) gültigen Zentren
+        # Adjazenzliste nur aus Kanten zwischen gültigen Zentren
         adjacency: dict[int, list[int]] = {}
         for dist, id_a, id_b in edges:
             if id_a not in self.centers or id_b not in self.centers:
@@ -76,7 +76,7 @@ class DoublingKCenter(StreamingKCenter):
             adjacency.setdefault(id_a, []).append(id_b)
             adjacency.setdefault(id_b, []).append(id_a)
 
-        # 3. Einmalig über die Zentren iterieren (Snapshot der Keys!)
+        # Einmalig über die Zentren iterieren
         for center_id in list(self.centers.keys()):
             for neighbor_id in adjacency.get(center_id, []):
                 if center_id in self.centers and neighbor_id in self.centers:
@@ -107,6 +107,6 @@ class DoublingKCenter(StreamingKCenter):
 
 
     def _maybe_compact(self) -> None:
-        max_valid = ((self.k + 1) * self.k) // 2  # C(k+1, 2)
+        max_valid = ((self.k + 1) * self.k) // 2
         if len(self.distances) > 4 * max_valid:
             self._compact_distances()
