@@ -3,6 +3,8 @@ import os
 import statistics
 import time
 
+from matplotlib import pyplot as plt
+
 from algorithms.online.parallelized_scaling_k_center import ParallelizedScalingKCenter
 from utils import check_radius, euclidean_distance, simulate_streaming, write_json, boxplot, generate_gauß_clusters
 
@@ -80,7 +82,7 @@ def experiment_5_plot_1() -> None:
         r"$R_{PSA}$": "R_PSA",
     }
 
-    plt = boxplot(
+    fig, ax = boxplot(
         data=data["results"],
         x_label="m",
         y_label="",
@@ -89,3 +91,4 @@ def experiment_5_plot_1() -> None:
 
     plot_file_path = os.path.join(os.path.dirname(__file__), "..", "results", "plots", "experiment_5_plot_1.jpg")
     plt.savefig(plot_file_path, dpi=300)
+    plt.close(fig)

@@ -3,6 +3,8 @@ import json
 import math
 import os
 from typing import Callable
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 from shapely.ops import transform
 from shapely import MultiPolygon, wkb as shapely_wkb
 
@@ -98,11 +100,24 @@ def nrw_osm_data_to_metric_centroids_csv() -> None:
 
 # Plots
 
+def get_subplot() -> tuple[Figure, Axes]:
+    plt.rcParams.update({
+        "text.usetex": True,
+        "font.family": "serif",
+        "font.size": 12
+    })
+
+    fig, ax = plt.subplots(figsize=(16, 8))
+
+    fig.tight_layout()
+
+    return fig, ax
+
 def boxplot(data: dict,
             x_label: str,
             y_label: str,
             algorithms: dict,
-    ):
+    ) -> tuple[Figure, Axes]:
 
     # Cluster sortieren
     try:
@@ -117,13 +132,7 @@ def boxplot(data: dict,
         for i, name in enumerate(algorithms.keys())
     }
 
-    plt.figure(figsize=(16, 8))
-
-    plt.rcParams.update({
-        "text.usetex": True,
-        "font.family": "serif",
-        "font.size": 12
-    })
+    fig, ax = get_subplot()
 
     n = len(algorithms)
     base_positions = np.arange(len(cluster_order))
@@ -150,7 +159,7 @@ def boxplot(data: dict,
             values = data[cluster].get(key, [])
             box_data.append(values)
 
-        plt.boxplot(
+        ax.boxplot(
             box_data,
             positions=positions,
             widths=box_width * 0.9,  # kleiner Abstand zwischen Boxen
@@ -163,9 +172,9 @@ def boxplot(data: dict,
         )
 
     # X-Achse
-    plt.xticks(base_positions, cluster_order)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
+    ax.set_xticks(base_positions, cluster_order)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
 
     # Legend
     legend_handles = [
@@ -173,12 +182,10 @@ def boxplot(data: dict,
         for name in algorithms.keys()
     ]
 
-    plt.legend(handles=legend_handles)
-    plt.grid(True, axis="y", linestyle="--", alpha=0.5)
+    ax.legend(handles=legend_handles)
+    ax.grid(True, axis="y", linestyle="--", alpha=0.5)
 
-    plt.tight_layout()
-
-    return plt
+    return fig, ax
 
 # Metrics
 

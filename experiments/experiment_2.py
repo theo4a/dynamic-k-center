@@ -4,6 +4,8 @@ import os
 import statistics
 import time
 
+from matplotlib import pyplot as plt
+
 from algorithms.offline.gonzalez import gonzalez
 from algorithms.online.doubling_k_center import DoublingKCenter
 from algorithms.online.parallelized_scaling_k_center import ParallelizedScalingKCenter
@@ -130,7 +132,7 @@ def experiment_2_plot_1() -> None:
         r"$R_{PSA-64}$": "R_PSA",
     }
 
-    plt = boxplot(
+    fig, ax = boxplot(
         data=data["results"],
         x_label="k",
         y_label="",
@@ -139,3 +141,4 @@ def experiment_2_plot_1() -> None:
 
     plot_file_path = os.path.join(os.path.dirname(__file__), "..", "results", "plots", "experiment_2_plot_1.jpg")
     plt.savefig(plot_file_path, dpi=300)
+    plt.close(fig)
