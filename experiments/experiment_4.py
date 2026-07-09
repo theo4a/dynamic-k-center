@@ -9,7 +9,7 @@ from algorithms.offline.gonzalez import gonzalez
 from algorithms.online.doubling_k_center import DoublingKCenter
 from algorithms.online.parallelized_scaling_k_center import ParallelizedScalingKCenter
 from algorithms.online.randomized_doubling_k_center import RandomizedDoublingKCenter
-from utils import check_radius, euclidean_distance, simulate_streaming, write_json, boxplot, generate_gauß_clusters
+from utils import check_radius, euclidean_distance, simulate_streaming, write_json, boxplot, generate_clustered_points
 
 
 def experiment_4() -> None:
@@ -47,7 +47,7 @@ def experiment_4() -> None:
         for i in range(sample_size):
             print(i)
 
-            points = generate_gauß_clusters(
+            points = generate_clustered_points(
                 k=k,
                 n=n,
                 cluster_std=1,

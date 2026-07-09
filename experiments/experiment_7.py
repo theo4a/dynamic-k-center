@@ -7,7 +7,7 @@ import numpy as np
 from algorithms.online.doubling_k_center import DoublingKCenter
 from algorithms.online.randomized_doubling_k_center import RandomizedDoublingKCenter
 from algorithms.online.parallelized_scaling_k_center import ParallelizedScalingKCenter
-from utils import _plt_config, get_subplot, load_dataset, write_json, euclidean_distance
+from utils import get_subplot, load_dataset, write_json, euclidean_distance
 
 
 
@@ -136,7 +136,6 @@ def experiment_7_2_plot_1() -> None:
     c_psa = np.array(results["C_PSA"])
     r_psa = results["r'_PSA"]
 
-    _plt_config()
 
     fig, ax = get_subplot()
 
@@ -268,8 +267,6 @@ def experiment_7_plot_3() -> None:
     a_werte = [results[str(k)]["r'_DA"] for k in x]
     b_werte = [results[str(k)]["r'_RDA"] for k in x]
     c_werte = [results[str(k)]["r'_PSA"] for k in x]
-
-    _plt_config()
 
     # Linien plotten
     plt.plot(x, a_werte, label="DA")

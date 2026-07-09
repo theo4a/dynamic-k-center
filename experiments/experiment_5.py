@@ -6,7 +6,7 @@ import time
 from matplotlib import pyplot as plt
 
 from algorithms.online.parallelized_scaling_k_center import ParallelizedScalingKCenter
-from utils import check_radius, euclidean_distance, simulate_streaming, write_json, boxplot, generate_gauß_clusters
+from utils import check_radius, euclidean_distance, generate_uniform_points, simulate_streaming, write_json, boxplot, generate_clustered_points
 
 
 def experiment_5() -> None:
@@ -32,12 +32,11 @@ def experiment_5() -> None:
         for i in range(sample_size):
             print(i)
 
-            points = generate_gauß_clusters(
-                k=k,
+            points = generate_uniform_points(
                 n=n,
-                cluster_std=8,
+                min=-100,
+                max=100,
                 dim=2,
-                center_std=10,
                 seed=i
             )
 
@@ -58,7 +57,6 @@ def experiment_5() -> None:
             "m": m,
             "mean(r'_PSA)": statistics.mean(value["r'_PSA"]),
             "mean(R_PSA)": statistics.mean(value["R_PSA"]),
-
         })
 
     data = {
@@ -90,5 +88,5 @@ def experiment_5_plot_1() -> None:
     )
 
     plot_file_path = os.path.join(os.path.dirname(__file__), "..", "results", "plots", "experiment_5_plot_1.jpg")
-    plt.savefig(plot_file_path, dpi=300)
+    plt.savefig(plot_file_path, dpi=200)
     plt.close(fig)

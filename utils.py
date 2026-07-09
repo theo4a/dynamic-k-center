@@ -277,7 +277,7 @@ def _select_farthest_centers(
  
     return candidates[chosen_indices]
  
-def generate_gauß_clusters(
+def generate_clustered_points(
     k: int,
     n: int,
     cluster_std: float,
@@ -308,7 +308,7 @@ def generate_gauß_clusters(
  
     return points.tolist()
 
-def generate_uniform(min: float, max: float, dim: int, n: int, seed) -> list[object]:
+def generate_uniform_points(min: float, max: float, dim: int, n: int, seed) -> list[object]:
     
     rng = np.random.default_rng(seed)
     
