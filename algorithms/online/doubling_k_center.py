@@ -2,7 +2,7 @@ import heapq
 from itertools import combinations
 from typing import Callable
 
-from algorithms.online.streaming_k_center import StreamingKCenter
+from algorithms.online.streaming_k_center_interface import StreamingKCenter
 
 
 class DoublingKCenter(StreamingKCenter):
@@ -32,7 +32,7 @@ class DoublingKCenter(StreamingKCenter):
         else:
             self._update_stage(point)
             while len(self.centers) >= self.k + 1:
-                self._merge_stage()
+                self._merging_stage()
             self._maybe_compact()
 
 
@@ -54,11 +54,11 @@ class DoublingKCenter(StreamingKCenter):
         for a, b in combinations(points, 2):
             heapq.heappush(self.distances, (self.d(a, b), id(a), id(b)))
 
-        self._merge_stage()
+        self._merging_stage()
         self._initialized = True
 
 
-    def _merge_stage(self) -> None:
+    def _merging_stage(self) -> None:
 
         self.r *= self.beta
         threshold = 2 * self.r

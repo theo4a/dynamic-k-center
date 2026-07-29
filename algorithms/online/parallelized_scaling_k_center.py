@@ -2,7 +2,7 @@ from itertools import combinations
 from typing import Callable
 
 from algorithms.online.scaling_k_center import ScalingKCenter
-from algorithms.online.streaming_k_center import StreamingKCenter
+from algorithms.online.streaming_k_center_interface import StreamingKCenter
 
 
 class ParallelizedScalingKCenter(StreamingKCenter):

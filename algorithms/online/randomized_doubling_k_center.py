@@ -39,5 +39,5 @@ class RandomizedDoublingKCenter(DoublingKCenter):
         for a, b in combinations(points, 2):
             heapq.heappush(self.distances, (self.d(a, b), id(a), id(b)))
 
-        self._merge_stage()
+        self._merging_stage()
         self._initialized = True
